@@ -6,22 +6,6 @@ use emoji yaml files like the ones found here:
 https://github.com/lambtron/emojipacks
 """
 
-"""
-Example curl API call to be replicated
-#/bin/bash
-curl -H "X-Auth-Token: " \
-     -H "X-User-Id: " \
-     http://localhost:3000/api/v1/emoji-custom.list
-
-
-curl -H "X-Auth-Token: " \
-     -H "X-User-Id: " \
-     -F "emoji=@7zYM751.png" \
-     -F "name=bender" \
-     -F "alias=" \
-     http://localhost:3000/api/v1/emoji-custom.create
-"""
-
 import yaml
 import os
 import pprint
