@@ -1,6 +1,5 @@
 XAUTHTOKEN = ''
 XUSERID = ''
-TOKEN_FILE = 'token.txt'
 """
 use emoji yaml files like the ones found here:
 https://github.com/lambtron/emojipacks
@@ -12,15 +11,7 @@ import pprint
 import json
 from urllib.request import urlopen
 from requests import get, post
-
-#set tokens from file
-def get_tokens(tokenf = TOKEN_FILE):
-    f = open(tokenf)
-    lines = f.read().split('\n')
-    f.close()
-    auth = lines[0].split(',')[1]
-    uid = lines[1].split(',')[1]
-    return (auth, uid)
+from rocketauth import get_tokens
 
 #retrieve emoji yaml file
 def get_emoji_yaml( emoji_url ):
@@ -108,7 +99,7 @@ choice: """
     choice = input(menu)
 
     if choice == '0':
-        get_emoji_list()
+        pprint.pprint(get_emoji_list())
     elif choice == '1':
         emoji_yaml_url = input("URL for YAML file: ")
         emoji_yaml = get_emoji_yaml(emoji_yaml_url)
