@@ -11,7 +11,7 @@ import pprint
 import json
 from urllib.request import urlopen
 from requests import get, post
-from rocketauth import get_tokens
+from rocketauth import get_tokens, auth_login, auth_logout
 
 #retrieve emoji yaml file
 def get_emoji_yaml( emoji_url ):
@@ -19,7 +19,7 @@ def get_emoji_yaml( emoji_url ):
     emoji_yaml = yaml.load(emoji_response.read())
     return emoji_yaml
 
-def batch_save_emojis( emoji_yaml ):
+def batch_save_emojis( emoji_yaml, token ):
     #make dir for temp saving files
     tmpdir = "/tmp/" + emoji_yaml['title']
     os.mkdir(tmpdir)
@@ -40,7 +40,7 @@ def batch_save_emojis( emoji_yaml ):
         f.write(response.content)
         emoji_files.append( (filename, name) )
     for emoji in emoji_files:
-        emoji_create_api_call(emoji[0], emoji[1])
+        emoji_create_api_call(emoji[0], emoji[1], token)
 
     #get rid of emoji files
     os.system('rm -rf ' + tmpdir)
@@ -58,9 +58,9 @@ r.txt
 
 until that is working, using os.system instead
 '''
-def emoji_create_api_call(emojifile, emojiname):
-    cmd = 'curl -H "X-Auth-Token: %s" '%XAUTHTOKEN
-    cmd+= '-H "X-User-Id: %s" '%XUSERID
+def emoji_create_api_call(emojifile, emojiname, token):
+    cmd = 'curl -H "X-Auth-Token: %s" '%token['X-Auth-Token']
+    cmd+= '-H "X-User-Id: %s" '%token['X-User-Id']
     cmd+= '-F "emoji=@'
     cmd+= emojifile + '" '
     cmd+= '-F "name=' + emojiname + '" '
@@ -71,16 +71,18 @@ def emoji_create_api_call(emojifile, emojiname):
     os.system(cmd)
 
 #return dictionary of emojis including rocket generated emoji ids
-def get_emoji_list():
-    headers = {'X-Auth-Token': XAUTHTOKEN,
-               'X-User-Id': XUSERID}
+def get_emoji_list(token):
+    #headers = {'X-Auth-Token': XAUTHTOKEN,
+    #           'X-User-Id': XUSERID}
+    headers = token
     r = get('http://localhost:3000/api/v1/emoji-custom.list', headers = headers)
     return r.json()
 
-def remove_all_emojis( emoji_list ):
-    headers = {'X-Auth-Token': XAUTHTOKEN,
-               'X-User-Id': XUSERID,
-               "Content-type":"application/json"}
+def remove_all_emojis( emoji_list, token ):
+    #headers = {'X-Auth-Token': XAUTHTOKEN,
+    #           'X-User-Id': XUSERID,
+    headers = token
+    headers["Content-type"] = "application/json"
     for emoji in emoji_list:
         print(emoji)
         emoji_id = emoji['_id']
@@ -89,8 +91,9 @@ def remove_all_emojis( emoji_list ):
         print(r.text)
 
 
-(XAUTHTOKEN, XUSERID) = get_tokens()
+#(XAUTHTOKEN, XUSERID) = get_tokens()
 if __name__ == '__main__':
+    token = auth_login()
     menu = """
 0: list custom emojis
 1: batch add emojis
@@ -99,12 +102,13 @@ choice: """
     choice = input(menu)
 
     if choice == '0':
-        pprint.pprint(get_emoji_list())
+        pprint.pprint(get_emoji_list( token ))
     elif choice == '1':
         emoji_yaml_url = input("URL for YAML file: ")
         emoji_yaml = get_emoji_yaml(emoji_yaml_url)
-        batch_save_emojis( emoji_yaml )
+        batch_save_emojis( emoji_yaml, token )
     elif choice == '2':
-        emoji_list = get_emoji_list()
+        emoji_list = get_emoji_list( token )
         emoji_list = emoji_list['emojis']['update']
-        remove_all_emojis(emoji_list)
+        remove_all_emojis(emoji_list, token)
+    auth_logout(token) 
