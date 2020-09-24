@@ -9,9 +9,10 @@ import yaml
 import os
 import pprint
 import json
+from copy import copy
 from urllib.request import urlopen
 from requests import get, post
-from rocketauth import get_tokens, auth_login, auth_logout
+from rocketauth import auth_choice, auth_logout
 
 #retrieve emoji yaml file
 def get_emoji_yaml( emoji_url ):
@@ -80,14 +81,16 @@ def emoji_create_api_call(emojifile, emojiname, token):
 def get_emoji_list(token):
     #headers = {'X-Auth-Token': XAUTHTOKEN,
     #           'X-User-Id': XUSERID}
-    headers = token
+    headers = copy(token)
+    headers.pop('type')
     r = get('http://localhost:3000/api/v1/emoji-custom.list', headers = headers)
     return r.json()
 
 def remove_all_emojis( emoji_list, token ):
     #headers = {'X-Auth-Token': XAUTHTOKEN,
     #           'X-User-Id': XUSERID,
-    headers = token
+    headers = copy(token)
+    headers.pop('type')
     headers["Content-type"] = "application/json"
     for emoji in emoji_list:
         print(emoji)
@@ -99,7 +102,7 @@ def remove_all_emojis( emoji_list, token ):
 
 #(XAUTHTOKEN, XUSERID) = get_tokens()
 if __name__ == '__main__':
-    token = auth_login()
+    token = auth_choice()
     menu = """
 0: list custom emojis
 1: batch add emojis from yaml
@@ -120,5 +123,7 @@ choice: """
     elif choice == '3':
         emoji_list = get_emoji_list( token )
         emoji_list = emoji_list['emojis']['update']
-        remove_all_emojis(emoji_list, token)
-    auth_logout(token)
+        remove_all_emojis(emoji_list, token)\
+            
+    if token['type'] == 'login':
+        auth_logout(token)
