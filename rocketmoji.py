@@ -104,7 +104,7 @@ if __name__ == '__main__':
 0: list custom emojis
 1: batch add emojis from yaml
 2: batch add emojis from folder
-2: batch delete all custom emojis
+3: batch delete all custom emojis
 choice: """
     choice = input(menu)
 
@@ -114,7 +114,8 @@ choice: """
         emoji_yaml_url = input("URL for YAML file: ")
         emoji_yaml = get_emoji_yaml(emoji_yaml_url)
         batch_save_emojis( emoji_yaml, token )
-    elif chocie == '2':
+    elif choice == '2':
+        dirname = input('directory: ')
         batch_add_emojis_dir(dirname, token)
     elif choice == '3':
         emoji_list = get_emoji_list( token )
