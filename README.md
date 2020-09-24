@@ -26,7 +26,7 @@ curl -H "X-Auth-Token: " \
      http://localhost:3000/api/v1/emoji-custom.create
 ```
 
-## rocketmoji
+## rocketmoji.py
 * Currently has the following features:
   * List all custom emojis
   * Batch add all emojis from a yaml file (examples found here: https://github.com/lambtron/emojipacks)
