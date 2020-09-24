@@ -45,6 +45,12 @@ def batch_save_emojis( emoji_yaml, token ):
     #get rid of emoji files
     os.system('rm -rf ' + tmpdir)
 
+def batch_add_emojis_dir(dirname, token):
+    for emoji in os.listdir(dirname):
+        fname = dirname + '/' + emoji
+        ename = emoji[:emoji.rfind('.')]
+        emoji_create_api_call(fname, ename, token)
+
 '''
 ideally, should be able to make API call using requests.
 Have not succedded, should look something like:
@@ -96,7 +102,8 @@ if __name__ == '__main__':
     token = auth_login()
     menu = """
 0: list custom emojis
-1: batch add emojis
+1: batch add emojis from yaml
+2: batch add emojis from folder
 2: batch delete all custom emojis
 choice: """
     choice = input(menu)
@@ -107,8 +114,10 @@ choice: """
         emoji_yaml_url = input("URL for YAML file: ")
         emoji_yaml = get_emoji_yaml(emoji_yaml_url)
         batch_save_emojis( emoji_yaml, token )
-    elif choice == '2':
+    elif chocie == '2':
+        batch_add_emojis_dir(dirname, token)
+    elif choice == '3':
         emoji_list = get_emoji_list( token )
         emoji_list = emoji_list['emojis']['update']
         remove_all_emojis(emoji_list, token)
-    auth_logout(token) 
+    auth_logout(token)
