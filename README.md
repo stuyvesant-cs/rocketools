@@ -30,7 +30,7 @@ curl -H "X-Auth-Token: " \
 * Currently has the following features:
   * List all custom emojis
   * Batch add all emojis from a yaml file (examples found here: https://github.com/lambtron/emojipacks)
-  * TM edit: use raw file? like https://raw.githubusercontent.com/lambtron/emojipacks/master/packs/parrotparty.yaml
+    * (_Nota bene: Make sure you link to a raw text file, as here:  https://raw.githubusercontent.com/lambtron/emojipacks/master/packs/parrotparty.yaml_)
   * Remove all custom emojis
 * Runs as an interactive *python3* script.
 * Uses the requests module except for uploading new emojis. That call seems to fail, so instead it creates a `curl` command and runs it via `os.system`.
